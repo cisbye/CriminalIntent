@@ -22,7 +22,7 @@ public class CrimePageActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         mViewPager = new ViewPager(this);
-        mViewPager.setId(R.id.vidaPage);
+        mViewPager.setId(R.id.viewPage);
         setContentView(mViewPager);
 
         mCrimes = CrimeLab.getCrimeLab(this).getCrimes();

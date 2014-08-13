@@ -1,13 +1,21 @@
 package com.example.huichen.criminalintent;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,11 +29,26 @@ public class CrimeListFragment extends ListFragment {
     private static final String TAG             = "CrimeListFragment";
     private static final int    REQUEST_CRIME   = 1;
 
+    private boolean mSubtitleVisible;
     private ArrayList<Crime> mCrimes;
+
+    private Button mCreateCrimeButton;
+
+    private void createCrime() {
+        Crime crime = new Crime();
+        CrimeLab.getCrimeLab(getActivity()).addCrime(crime);
+
+        Intent intent = new Intent(getActivity(), CrimePageActivity.class);
+        intent.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+        startActivityForResult(intent, 0);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        setRetainInstance(true);
+        mSubtitleVisible = false;
 
         getActivity().setTitle(R.string.crimes_title);
         mCrimes = CrimeLab.getCrimeLab(getActivity()).getCrimes();
@@ -35,9 +58,68 @@ public class CrimeListFragment extends ListFragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_crime_list, null);
+        mCreateCrimeButton = (Button)view.findViewById(R.id.create_crime_button);
+        mCreateCrimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createCrime();
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (mSubtitleVisible) {
+                getActivity().getActionBar().setSubtitle(R.string.subtitle);
+            }
+        }
+
+        return view;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_crime_list, menu);
+
+        MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
+        if (mSubtitleVisible && (showSubtitle != null)) {
+            showSubtitle.setTitle(R.string.hide_subtitle);
+        }
+    }
+
+    @TargetApi(11)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_new_crime:
+                createCrime();
+                return true;
+
+            case R.id.menu_item_show_subtitle:
+                if (getActivity().getActionBar().getSubtitle() == null) {
+                    getActivity().getActionBar().setSubtitle(R.string.subtitle);
+                    item.setTitle(R.string.hide_subtitle);
+
+                    mSubtitleVisible = true;
+                } else {
+                    getActivity().getActionBar().setSubtitle(null);
+                    item.setTitle(R.string.show_subtitle);
+
+                    mSubtitleVisible = false;
+                }
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
