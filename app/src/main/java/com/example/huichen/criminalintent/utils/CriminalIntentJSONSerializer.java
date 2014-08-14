@@ -1,10 +1,11 @@
-package com.example.huichen.criminalintent;
+package com.example.huichen.criminalintent.utils;
 
 import android.content.Context;
 
+import com.example.huichen.criminalintent.model.Crime;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;

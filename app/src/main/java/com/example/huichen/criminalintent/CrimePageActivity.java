@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.example.huichen.criminalintent.model.Crime;
+import com.example.huichen.criminalintent.model.CrimeLab;
+
 import java.util.ArrayList;
 import java.util.UUID;
 

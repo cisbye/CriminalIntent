@@ -22,6 +22,9 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.huichen.criminalintent.model.Crime;
+import com.example.huichen.criminalintent.model.CrimeLab;
+
 import java.util.ArrayList;
 
 /**
@@ -83,7 +86,7 @@ public class CrimeListFragment extends ListFragment {
             registerForContextMenu(listView);
         } else {
             // HONEYCOMB API 11及之后的系统采用上下文操作栏模式
-            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
                 @Override
                 public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {

@@ -10,13 +10,14 @@ import android.util.Log;
  * Created by huichen on 8/12/14.
  */
 public abstract class SingleFragmentActivity extends FragmentActivity {
-    private String TAG = getLocalClassName();;
+    private String TAG;
 
     protected abstract Fragment createFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TAG = getLocalClassName();
 
         Log.d(TAG, "onCreate(Bundle savedInstanceState) called");
 

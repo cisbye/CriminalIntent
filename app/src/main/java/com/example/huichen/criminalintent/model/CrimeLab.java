@@ -1,7 +1,9 @@
-package com.example.huichen.criminalintent;
+package com.example.huichen.criminalintent.model;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.example.huichen.criminalintent.utils.CriminalIntentJSONSerializer;
 
 import java.util.ArrayList;
 import java.util.UUID;
