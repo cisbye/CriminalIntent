@@ -17,6 +17,7 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TAG = getLocalClassName();
 
         Log.d(TAG, "onCreate(Bundle savedInstanceState) called");
 
@@ -28,8 +29,6 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
             fragment = createFragment();
             fm.beginTransaction().add(R.id.framgentContainer, fragment).commit();
         }
-
-        TAG = getLocalClassName();
     }
 
     @Override

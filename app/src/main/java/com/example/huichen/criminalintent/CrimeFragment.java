@@ -118,13 +118,21 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.getCrimeLab(getActivity()).saveCrimes();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // 检查Manifest中是否配置的父Activity，如果有，就回退
-                if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    NavUtils.navigateUpFromSameTask(getActivity());
-                }
+//                // 检查Manifest中是否配置的父Activity，如果有，就回退
+//                if (NavUtils.getParentActivityName(getActivity()) != null) {
+//                    NavUtils.navigateUpFromSameTask(getActivity());
+//                }
+
+                getActivity().finish();
 
                 return true;
 

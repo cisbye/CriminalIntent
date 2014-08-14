@@ -1,6 +1,7 @@
 package com.example.huichen.criminalintent;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -9,14 +10,25 @@ import java.util.UUID;
  * Created by huichen on 8/12/14.
  */
 public class CrimeLab {
+    private static final String TAG         = "CrimeLab";
+    private static final String FILENAME    = "crimes.json";
+
     private static CrimeLab     sCrimeLab;
 
     private Context             mAppContext;
     private ArrayList<Crime>    mCrimes;
+    private CriminalIntentJSONSerializer mSerializer;
 
     private CrimeLab(Context appContext) {
         mAppContext = appContext;
-        mCrimes = new ArrayList<Crime>();
+        mSerializer = new CriminalIntentJSONSerializer(mAppContext, FILENAME);
+
+        try {
+            mCrimes = mSerializer.loadCrimes();
+        } catch (Exception e) {
+            mCrimes = new ArrayList<Crime>();
+            Log.e(TAG, "Error loading crimes: ", e);
+        }
 
 //        // test data
 //        for (int i = 0; i < 102; i++) {
@@ -51,5 +63,21 @@ public class CrimeLab {
 
     public void addCrime(Crime crime) {
         mCrimes.add(crime);
+    }
+
+    public void deleteCrime(Crime crime) {
+        mCrimes.remove(crime);
+    }
+
+    public boolean saveCrimes() {
+        try {
+            mSerializer.saveCrimes(mCrimes);
+            Log.d(TAG, "crimes saved to file");
+
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving crimes: ", e);
+            return false;
+        }
     }
 }
