@@ -60,6 +60,7 @@ public class CrimeFragment extends Fragment {
     private Button      mDateButton;
     private CheckBox    mSolvedCheckBox;
     private Button      mSuspectButton;
+    private ImageButton mCallSuspectButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -73,6 +74,10 @@ public class CrimeFragment extends Fragment {
 
     private void updateDate() {
         mDateButton.setText(DateFormat.format("yyyy-MM-dd kk:mm:ss", mCrime.getDate()));
+    }
+
+    private void updateCallSuspectButton() {
+        mCallSuspectButton.setEnabled(mCrime.getPhoneNumber() != null);
     }
 
     private void showPhoto() {
@@ -205,6 +210,16 @@ public class CrimeFragment extends Fragment {
             mSuspectButton.setText(mCrime.getSuspect());
         }
 
+        mCallSuspectButton = (ImageButton)view.findViewById(R.id.crime_callSuspectButton);
+        mCallSuspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+mCrime.getPhoneNumber()));
+                startActivity(intent);
+            }
+        });
+        updateCallSuspectButton();
+
         return view;
     }
 
@@ -269,23 +284,36 @@ public class CrimeFragment extends Fragment {
 
             // 指定要查询的字段
             String[] queryFields = new String[] {
-                    ContactsContract.Contacts.DISPLAY_NAME
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.DISPLAY_NAME,
             };
 
             // 执行查询，contactUri就像"where"条件一样
             Cursor cursor = getActivity().getContentResolver().query(contactUri, queryFields, null, null, null);
-            if (cursor.getCount() == 0) {
+            if (cursor.getCount() > 0) {
+                // Pull out the first column of the first row of data - that is your suspect name
+                cursor.moveToFirst();
+                String contactId = cursor.getString(0);
+                String suspect = cursor.getString(1);
+                mCrime.setSuspect(suspect);
+                mSuspectButton.setText(suspect);
                 cursor.close();
-                return;
+
+                Cursor phoneCursor = getActivity().getContentResolver().query(
+                        android.provider.ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        null,
+                        android.provider.ContactsContract.CommonDataKinds.Phone.CONTACT_ID+"="+contactId,
+                        null,
+                        null);
+                if (phoneCursor.getCount() > 0) {
+                    phoneCursor.moveToFirst();
+                    String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(android.provider.ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    mCrime.setPhoneNumber(phoneNumber);
+                    phoneCursor.close();
+                }
             }
 
-            // Pull out the first column of the first row of data - that is your suspect name
-            cursor.moveToFirst();
-            String suspect = cursor.getString(0);
-            mCrime.setSuspect(suspect);
-            mSuspectButton.setText(suspect);
-
-            cursor.close();
+            updateCallSuspectButton();
         }
     }
 
